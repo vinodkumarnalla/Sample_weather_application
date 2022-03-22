@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.android.app.sampleapplication.network.APIInterface
 import com.android.app.sampleapplication.network.NetworkRepository
 import com.android.app.sampleapplication.network.Result
 import com.android.app.sampleapplication.network.models.ApiResponseCallback
@@ -23,12 +24,12 @@ class MainViewModel @Inject constructor(private val networkRepository: NetworkRe
         viewModelScope.launch(Dispatchers.IO) {
 
             networkRepository.searchWeather(city, object : ApiResponseCallback {
-                override fun onSuccess(responseData: ResponseData) {
-
+                override fun onSuccess(responseData: Result) {
+                    screenState.postValue(responseData)
                 }
 
-                override fun onError(message: String) {
-                    screenState.postValue(Result.Error(message))
+                override fun onError(message: Result) {
+                    screenState.postValue(message)
                 }
 
             })
@@ -37,5 +38,22 @@ class MainViewModel @Inject constructor(private val networkRepository: NetworkRe
 
     fun getScreenStateLiveData(): LiveData<Result> {
         return screenState
+    }
+
+
+    fun loadData() {
+        screenState.value = Result.Loading
+        viewModelScope.launch(Dispatchers.IO) {
+            networkRepository.loadData(object : ApiResponseCallback {
+                override fun onSuccess(responseData: Result) {
+                    screenState.postValue(responseData)
+                }
+
+                override fun onError(message: Result) {
+                    screenState.postValue(message)
+                }
+
+            })
+        }
     }
 }

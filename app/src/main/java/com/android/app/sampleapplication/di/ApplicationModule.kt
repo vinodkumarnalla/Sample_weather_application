@@ -1,7 +1,9 @@
 package com.android.app.sampleapplication.di
 
+import com.android.app.sampleapplication.database.WeatherDao
 import com.android.app.sampleapplication.network.APIInterface
 import com.android.app.sampleapplication.network.NetworkRepository
+import com.android.app.sampleapplication.network.mappers.ResponseToDbMapper
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -14,8 +16,8 @@ class ApplicationModule {
 
     @Provides
     @Singleton
-    fun provideDataRepository(apiInterface: APIInterface): NetworkRepository =
-        NetworkRepository(apiInterface)
+    fun provideDataRepository(apiInterface: APIInterface, weatherDao: WeatherDao, responseToDbMapper: ResponseToDbMapper): NetworkRepository =
+        NetworkRepository(apiInterface,weatherDao,responseToDbMapper)
 
 
 }

@@ -8,6 +8,7 @@ import android.widget.SearchView
 import androidx.activity.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.app.sampleapplication.R
+import com.android.app.sampleapplication.database.WeatherEntity
 import com.android.app.sampleapplication.databinding.ActivityMainBinding
 import com.android.app.sampleapplication.network.Result
 import dagger.hilt.android.AndroidEntryPoint
@@ -16,7 +17,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
 
     private lateinit var binding: ActivityMainBinding
-    private lateinit var adapter : WeatherListAdapter
+    private lateinit var adapter: WeatherListAdapter
 
     private val mainViewModel: MainViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,6 +26,7 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
         setContentView(binding.root)
         initObservers()
         setupAdapter()
+        mainViewModel.loadData()
     }
 
     private fun setupAdapter() {
@@ -48,18 +50,15 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
                     binding.txtError.text = it.message
                 }
                 is Result.Success -> {
-                    binding.progressBar.visibility = View.VISIBLE
+                    binding.progressBar.visibility = View.GONE
                     binding.rvItems.visibility = View.VISIBLE
                     binding.txtError.visibility = View.GONE
-                    setupAdapterData()
+                    adapter.setData(it.data)
                 }
             }
         })
     }
 
-    private fun setupAdapterData() {
-
-    }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu, menu)

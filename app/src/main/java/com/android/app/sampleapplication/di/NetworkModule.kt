@@ -1,10 +1,13 @@
 package com.android.app.sampleapplication.di
 
+import android.content.Context
 import com.android.app.sampleapplication.network.APIInterface
+import com.android.app.sampleapplication.network.MockRequestInterceptor
 import com.android.app.sampleapplication.utils.APIConstants
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -19,9 +22,10 @@ class NetworkModule {
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(): OkHttpClient {
+    fun provideOkHttpClient(@ApplicationContext appContext: Context): OkHttpClient {
         return OkHttpClient
             .Builder()
+            .addInterceptor(MockRequestInterceptor(appContext))
             .build()
     }
 
